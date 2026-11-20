@@ -121,7 +121,7 @@ VO and captions are the same words, so the piece works muted. Uncle's lines appe
 
 **Beat 7 (36–41 s)**
 - Group chat bubble: "Settled."
-- Stacked lines and VO: "Real places. Live rain. Live buses. One opinion."
+- Stacked lines and VO: "Real places. Rain forecast. Live buses. One opinion."
 
 **Beat 8 (41–45 s)**
 - Wordmark: "Lunch Uncle"
@@ -130,7 +130,7 @@ VO and captions are the same words, so the piece works muted. Uncle's lines appe
 - Location line: "For lunch around CT Hub 2, Lavender."
 
 **Full VO script, about 60 words:**
-"Where to eat ah? Every day, same question. Nobody decides. So ask Uncle. Real places near CT Hub 2. One or two picks, not ten. Checks the two-hour rain forecast before you walk. Live bus arrivals. Just give the five-digit stop code. Real places. Live rain. Live buses. One opinion. Don't think so much. Ask Uncle."
+"Where to eat ah? Every day, same question. Nobody decides. So ask Uncle. Real places near CT Hub 2. One or two picks, not ten. Checks the two-hour rain forecast before you walk. Live bus arrivals. Just give the five-digit stop code. Real places. Rain forecast. Live buses. One opinion. Don't think so much. Ask Uncle."
 
 ## 7. Sound direction (for a later edit, not built now)
 

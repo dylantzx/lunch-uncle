@@ -349,7 +349,7 @@ Requirement IDs: FR-36, FR-38, FR-32.
 |        [Settled.] (v)      |   cream bubble, green tick
 |                            |
 |       Real places.         |   88/800, cream
-|       Live rain.           |
+|       Rain forecast.       |
 |       Live buses.          |
 |       One opinion.         |   yellow
 |                            |
@@ -370,11 +370,11 @@ Requirement IDs: FR-36, FR-38, FR-32.
 | Element | Text | Position | In | Out | Motion |
 |---|---|---|---|---|---|
 | Line 1 | "Real places." | centred, y 760, caption 88 px, `cream` | 37.2 | 41.0 | Caption-in |
-| Line 2 | "Live rain." | centred, y 880, `cream` | 37.7 | 41.0 | Caption-in |
+| Line 2 | "Rain forecast." | centred, y 880, `cream` | 37.7 | 41.0 | Caption-in |
 | Line 3 | "Live buses." | centred, y 1000, `cream` | 38.2 | 41.0 | Caption-in |
 | Line 4 | "One opinion." | centred, y 1120, `yellow` | 38.7 | 41.0 | Caption-in. On screen 2.3 s. |
 
-- Caption/VO: "Real places. Live rain. Live buses. One opinion." (the stacked lines are the caption).
+- Caption/VO: "Real places. Rain forecast. Live buses. One opinion." (the stacked lines are the caption).
 - Transition out at 41.0 s: the bubble, tick and four lines slide up 40 px and fade, 250 ms, while the end card starts building. Background stays `ink`.
 
 ### Beat 8: End card (41.0–45.0 s)
@@ -433,11 +433,11 @@ Requirement IDs: Purpose and target users (spec section 1), FR-1.
 
 ## 4. Adjustments made within beats
 
-No copy and no beat boundary was changed.
+No copy and no beat boundary was changed by the storyboard. One line was changed afterwards by the director: beat 7 "Live rain." became "Rain forecast." (see section 6, problem 1).
 
 1. **Beat 2:** the caption enters at 5.8 s, together with the clock landing, not after the last bubble has settled, so it gets 2.2 s on screen.
 2. **Beat 3:** the phone is on from the first frame of the cut (no entrance animation) so the greeting and the caption both fit in 3 s. The caption is on for 2.2 s.
-3. **Beat 7:** the brief says "three short lines stack", but its copy has four ("Real places. Live rain. Live buses. One opinion."). All four are shown. The stack starts at 37.2 s with a 0.5 s stagger so the last line holds 2.3 s.
+3. **Beat 7:** the brief says "three short lines stack", but its copy has four ("Real places. Rain forecast. Live buses. One opinion."). All four are shown. The stack starts at 37.2 s with a 0.5 s stagger so the last line holds 2.3 s.
 4. **Thinking state:** held for 0.7 to 0.8 s, not "a few frames", so it is noticed and matches FR-4, while leaving the reply at least 5.5 s.
 5. **Chat scroll:** the previous exchange scrolls out during each colour wipe, so each capability beat shows one exchange. This follows the brief's "one idea per screen" and reads as the real page's auto-scroll (FR-9).
 6. **Footnote size:** 32 px, below the brief's 44 px minimum. It is a disclaimer, not a selling line, and at 44 px it would not fit on one line or would compete with the caption. Flagged below.
@@ -464,14 +464,14 @@ IDs were checked against the text of `docs/requirements.md`. "[prompt]" means th
 | 13 | "Live bus arrivals." | Beats 6, 7 | FR-49, FR-50 | Yes |
 | 14 | "Just give the five-digit stop code." | Beat 6 | FR-35 [prompt], FR-48 | Yes. The code is required from the user (limitation 8) |
 | 15 | Next and following arrival in minutes | Beat 6 bubble and callout | FR-50 (`next_min`, `subsequent_min`) | Yes |
-| 16 | "Live rain." | Beat 7 | FR-45, FR-46 | **Weak.** The source is a two-hour forecast, not live rain readings. See problem 1 |
+| 16 | "Rain forecast." | Beat 7 | FR-45, FR-46 | Yes: the source is a two-hour area forecast. Changed from "Live rain." (problem 1) |
 | 17 | "One opinion." | Beat 7 | FR-28 [prompt], FR-36 [prompt] | Requested, not enforced |
 | 18 | Opens in a browser at an address | Beat 8 | FR-1, target users (section 1) | Yes. Address unknown: `[APP_URL]` |
 | 19 | "For lunch around CT Hub 2, Lavender." | Beat 8 | Purpose (section 1), FR-31, FR-41 | Yes |
 
 ## 6. Problems found with the brief
 
-1. **"Live rain." overclaims (beat 7).** FR-45 and FR-46 give a two-hour forecast for the Kallang area, and guardrail 6 itself says not to imply more precision than that. Suggested replacement, same rhythm: "Rain forecast." The storyboard keeps the brief's wording because the copy is fixed; this needs the director's call before release.
+1. **"Live rain." overclaimed (beat 7). Resolved.** FR-45 and FR-46 give a two-hour forecast for the Kallang area, and guardrail 6 itself says not to imply more precision than that. The director changed the line to "Rain forecast." after this storyboard was written; the brief, this storyboard and the video now all use it.
 2. **"Three short lines stack" against four lines of copy (beat 7).** Resolved by showing all four.
 3. **Word counts in the brief are off by one** for two Uncle lines: the rain reply is 15 words (brief says 16) and the bus reply is 14 (brief says 13). No effect on the video.
 4. **The bus reply is less specific than a real one.** The tool returns arrivals per service (FR-50), so a real reply would normally name service numbers. Guardrail 5 forbids showing them, so "Next bus 3 min" stays generic. Covered by the footnote, but it is the least true-to-life exchange.
