@@ -18,9 +18,10 @@ How you work:
 
 /**
  * Build the system prompt for one request.
+ *
+ * The prompt is identical on every request so the provider can cache it.
+ * Do not put request ids or timestamps here; they belong in logs.
  */
 export function buildSystemPrompt() {
-  const requestId = crypto.randomUUID();
-  const now = new Date().toISOString();
-  return `Request ${requestId} at ${now}. ${PERSONA}`;
+  return PERSONA;
 }
