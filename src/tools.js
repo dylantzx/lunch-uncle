@@ -11,6 +11,7 @@ export const CT_HUB_2 = { latitude: 1.3115, longitude: 103.8615 };
 
 const SEARCH_RADIUS_METRES = 800;
 const MAX_PLACES = 10;
+const TOOL_TIMEOUT_MS = 8_000;
 const FORECAST_AREA = "Kallang";
 
 const PLACES_URL = "https://places.googleapis.com/v1/places:searchText";
@@ -83,15 +84,27 @@ export const toolDefinitions = [
  * Run one tool call requested by the model and return the result as a string.
  */
 export async function executeTool(name, args, env) {
+  const safeArgs = args !== null && typeof args === "object" ? args : {};
+  try {
+    return JSON.stringify(await runTool(name, safeArgs, env));
+  } catch (err) {
+    // A failed tool must not abort the whole turn. Report it to the model.
+    console.error(`tool ${name} failed:`, err);
+    const reason = err?.name === "TimeoutError" ? "timed out" : "failed";
+    return JSON.stringify({ error: `${name} ${reason}` });
+  }
+}
+
+async function runTool(name, args, env) {
   switch (name) {
     case "find_lunch_places":
-      return JSON.stringify(await findLunchPlaces(args, env));
+      return findLunchPlaces(args, env);
     case "get_rain_forecast":
-      return JSON.stringify(await getRainForecast());
+      return getRainForecast();
     case "get_bus_arrivals":
-      return JSON.stringify(await getBusArrivals(args));
+      return getBusArrivals(args);
     default:
-      return JSON.stringify({ error: `Unknown tool: ${name}` });
+      return { error: `Unknown tool: ${name}` };
   }
 }
 
@@ -100,12 +113,18 @@ export async function executeTool(name, args, env) {
 // ---------------------------------------------------------------------------
 
 async function findLunchPlaces({ query, open_now = false }, env) {
-  const centre = { latitude: 1.3236, longitude: 103.9273 };
+  if (!env.GOOGLE_PLACES_API_KEY) {
+    return { error: "Places search is not configured" };
+  }
+  if (typeof query !== "string" || query.trim() === "") {
+    return { error: "query is required" };
+  }
+  const centre = CT_HUB_2;
 
   const body = {
     textQuery: query,
     includedType: "restaurant",
-    openNow: open_now,
+    openNow: open_now === true,
     pageSize: MAX_PLACES,
     locationBias: {
       circle: { center: centre, radius: SEARCH_RADIUS_METRES },
@@ -121,6 +140,7 @@ async function findLunchPlaces({ query, open_now = false }, env) {
         "places.id,places.displayName,places.location,places.rating,places.currentOpeningHours",
     },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(TOOL_TIMEOUT_MS),
   });
 
   if (!res.ok) {
@@ -135,11 +155,23 @@ async function findLunchPlaces({ query, open_now = false }, env) {
  * Shape Places API results into the fields Uncle needs.
  */
 export function formatPlaces(places, origin) {
-  return places.map(({ displayName, rating, location }) => ({
-    name: displayName?.text ?? "Unnamed",
-    rating: rating ?? null,
-    distance_m: Math.round(haversineMetres(origin, location)),
-  }));
+  return places.map(
+    ({ displayName, rating, location, currentOpeningHours }) => ({
+      name: displayName?.text ?? "Unnamed",
+      rating: rating ?? null,
+      distance_m: hasCoordinates(location)
+        ? Math.round(haversineMetres(origin, location))
+        : null,
+      open_now: currentOpeningHours?.openNow ?? null,
+    }),
+  );
+}
+
+function hasCoordinates(location) {
+  return (
+    typeof location?.latitude === "number" &&
+    typeof location?.longitude === "number"
+  );
 }
 
 /**
@@ -163,7 +195,9 @@ export function haversineMetres(a, b) {
 // ---------------------------------------------------------------------------
 
 async function getRainForecast() {
-  const res = await fetch(FORECAST_URL);
+  const res = await fetch(FORECAST_URL, {
+    signal: AbortSignal.timeout(TOOL_TIMEOUT_MS),
+  });
   if (!res.ok) {
     return { error: `Forecast API returned ${res.status}` };
   }
@@ -178,7 +212,7 @@ export function formatForecast(payload, area) {
   if (!item) {
     return { error: "No forecast available" };
   }
-  const entry = item.forecasts.find((f) => f.area === area);
+  const entry = item.forecasts?.find?.((f) => f.area === area);
   return {
     area,
     forecast: entry?.forecast ?? "Unknown",
@@ -191,27 +225,56 @@ export function formatForecast(payload, area) {
 // ---------------------------------------------------------------------------
 
 async function getBusArrivals({ stop_code }) {
-  const url = `${BUS_URL}?id=${encodeURIComponent(stop_code)}`;
-  const res = await fetch(url);
+  const stopCode = normaliseBusStopCode(stop_code);
+  if (!stopCode) {
+    return { error: "stop_code must be a five-digit string, e.g. 07371" };
+  }
+  const url = `${BUS_URL}?id=${encodeURIComponent(stopCode)}`;
+  const res = await fetch(url, {
+    signal: AbortSignal.timeout(TOOL_TIMEOUT_MS),
+  });
   if (!res.ok) {
     return { error: `Bus API returned ${res.status}` };
   }
-  return formatBusArrivals(await res.json(), stop_code);
+  return formatBusArrivals(await res.json(), stopCode);
 }
 
 /**
  * Reduce an arrivelah response to service numbers and minutes to arrival.
  */
 export function formatBusArrivals(payload, stopCode) {
-  const services = payload?.services ?? [];
+  // arrivelah reports problems such as an unknown stop with HTTP 200 and an
+  // error field, so check for it rather than reporting "no services".
+  if (payload?.error) {
+    const detail = payload.error;
+    return { error: typeof detail === "string" ? detail : "Bus API error" };
+  }
+  const services = Array.isArray(payload?.services) ? payload.services : [];
   return {
     stop_code: stopCode,
-    services: services.map((s) => ({
+    services: services.filter(Boolean).map((s) => ({
       service: s.no,
       next_min: minutesFromNow(s.next),
       subsequent_min: minutesFromNow(s.subsequent),
     })),
   };
+}
+
+/**
+ * Singapore bus stop codes are five digits and may start with zero.
+ *
+ * Returns the code as a five-digit string, or null when it is not one.
+ * A model sometimes sends the code as a number, which drops the leading
+ * zero, so whole numbers are padded back to five digits.
+ */
+export function normaliseBusStopCode(value) {
+  if (typeof value === "string") {
+    return /^\d{5}$/.test(value) ? value : null;
+  }
+  if (Number.isInteger(value) && value >= 0 && value <= 99999) {
+    return String(value).padStart(5, "0");
+  }
+  return null;
 }
 
 function minutesFromNow(arrival) {
