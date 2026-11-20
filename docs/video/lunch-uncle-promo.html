@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lunch Uncle promo (45 s draft)</title>
+<style>
+:root {
+  --ink: #1F1A17; --cream: #FFF6E5; --red: #E03A1E; --yellow: #FFC533;
+  --green: #0F8B6C; --blue: #2F6FDE; --grey: #8A7F76;
+  --sans: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+html, body { margin: 0; height: 100%; overflow: hidden; background: var(--ink); }
+body { -webkit-font-smoothing: antialiased; font-family: var(--sans); }
+#bg, #wipe { position: fixed; left: 0; top: 0; width: 100%; height: 100%; }
+#wipe { visibility: hidden; }
+#stage { position: fixed; left: 50%; top: 50%; width: 1080px; height: 1920px; margin: -960px 0 0 -540px; transform-origin: 50% 50%; }
+#rain { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+#rain svg { position: absolute; left: 0; top: 0; width: 10px; height: 34px; fill: var(--cream); visibility: hidden; }
+#content { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; }
+#content > * { position: absolute; visibility: hidden; }
+.mono { font-family: var(--mono); font-weight: 700; }
+
+/* beat 1 and 2 */
+#clock { left: 0; top: 632px; width: 1080px; height: 150px; line-height: 150px; font-size: 150px; text-align: center; white-space: pre; color: var(--cream); }
+#clock span { display: inline-block; }
+#headline { left: 0; top: 900px; width: 1080px; text-align: center; font-size: 120px; font-weight: 900; letter-spacing: -0.02em; line-height: 1; color: var(--cream); }
+.gb { display: flex; align-items: center; gap: 24px; }
+.gb .dot { width: 56px; height: 56px; border-radius: 50%; flex: none; }
+.gb .b { background: var(--grey); color: var(--cream); font-size: 44px; font-weight: 500; line-height: 1.3; padding: 26px 32px; border-radius: 36px; max-width: 620px; box-sizing: border-box; white-space: nowrap; }
+
+/* phone */
+#phone { left: 140px; top: 260px; width: 800px; height: 980px; box-sizing: border-box; background: var(--ink); border: 6px solid var(--grey); border-radius: 64px; overflow: hidden; }
+#phead { position: absolute; left: -6px; top: -6px; width: 800px; height: 120px; box-sizing: border-box; border-bottom: 2px solid rgba(138,127,118,0.4); color: var(--cream); font-size: 48px; font-weight: 800; line-height: 120px; padding-left: 48px; letter-spacing: -0.01em; }
+#chat { position: absolute; left: 26px; top: 134px; width: 736px; height: 820px; overflow: hidden; }
+.grp { position: absolute; left: 0; top: 0; width: 736px; height: 820px; }
+.bub { position: absolute; left: 0; top: 0; box-sizing: border-box; font-size: 44px; font-weight: 500; line-height: 1.3; border-radius: 36px; overflow: hidden; visibility: hidden; }
+.bub .in { box-sizing: border-box; padding: 26px 32px; width: max-content; max-width: 600px; }
+.bub.uncle { background: var(--cream); color: var(--ink); border-bottom-left-radius: 10px; }
+.bub.user { background: var(--red); color: var(--cream); border-bottom-right-radius: 10px; }
+.bub.user .in, .bub.bal .in { text-wrap: balance; }
+.bub .reply { text-wrap: pretty; }
+.hl { white-space: nowrap; background-repeat: no-repeat; background-position: 0 100%; background-size: 0% 10px; padding-bottom: 2px; }
+.hl.y { background-image: linear-gradient(var(--yellow), var(--yellow)); }
+.hl.k { background-image: linear-gradient(var(--ink), var(--ink)); background-size: 0% 6px; }
+
+#umbrella, #pole { left: 800px; top: 170px; width: 150px; height: 150px; }
+
+/* callouts, captions, footnote */
+.pillrow { left: 0; top: 1270px; width: 1080px; height: 110px; display: flex; justify-content: center; }
+.pill { display: inline-flex; align-items: center; height: 110px; padding: 0 50px; border-radius: 55px; background: var(--ink); color: var(--cream); font-family: var(--mono); font-weight: 700; font-size: 56px; white-space: nowrap; }
+.seg { display: inline-flex; align-items: center; }
+.sep { width: 12px; height: 12px; border-radius: 50%; background: var(--grey); margin: 0 28px; flex: none; }
+.star { width: 46px; height: 46px; margin-left: 14px; fill: var(--yellow); flex: none; }
+.odot { width: 22px; height: 22px; border-radius: 50%; background: var(--green); margin-right: 16px; flex: none; box-shadow: 0 0 0 5px rgba(15,139,108,0.35); }
+.cap { left: 80px; top: 1420px; width: 920px; height: 220px; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 64px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.15; color: var(--cream); }
+#foot { left: 80px; top: 1700px; width: 920px; height: 44px; line-height: 44px; text-align: center; font-size: 32px; font-weight: 500; color: var(--cream); }
+
+/* beat 7 */
+#settled { left: 0; top: 460px; width: 1080px; display: flex; justify-content: center; }
+#settled div { background: var(--cream); color: var(--ink); font-size: 56px; font-weight: 700; line-height: 1.3; padding: 26px 40px; border-radius: 36px; }
+#tick { width: 72px; height: 72px; left: 0; top: 0; }
+.stack { left: 0; width: 1080px; text-align: center; font-size: 88px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.15; color: var(--cream); }
+
+/* beat 8 */
+#wordmark { left: 0; top: 620px; width: 1080px; text-align: center; font-size: 120px; font-weight: 900; letter-spacing: -0.02em; line-height: 1; color: var(--cream); }
+#tagline { left: 0; top: 860px; width: 1080px; text-align: center; font-size: 64px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.15; color: var(--cream); }
+#cta { left: 0; top: 1140px; width: 1080px; display: flex; justify-content: center; }
+#cta div { height: 120px; line-height: 120px; padding: 0 64px; border-radius: 60px; background: var(--red); color: var(--cream); font-size: 56px; font-weight: 800; white-space: nowrap; }
+#cta .mono { font-size: 52px; margin-left: 6px; }
+#loc { left: 0; top: 1340px; width: 1080px; text-align: center; font-size: 44px; font-weight: 500; line-height: 1.3; color: var(--grey); }
+
+/* player controls (outside the stage, auto-hiding) */
+#ctl { position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 999px; background: rgba(31,26,23,0.82); border: 1px solid rgba(255,246,229,0.18); color: var(--cream); font: 600 12px/1 var(--mono); opacity: 0; pointer-events: none; transition: opacity 0.25s; width: min(520px, calc(100% - 60px)); box-sizing: border-box; }
+#ctl.show { opacity: 1; pointer-events: auto; }
+#ctl button { all: unset; cursor: pointer; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; flex: none; }
+#ctl button:hover, #ctl button:focus-visible { background: rgba(255,246,229,0.16); }
+#ctl svg { width: 14px; height: 14px; fill: var(--cream); }
+#ctl input { flex: 1; min-width: 0; accent-color: #FFC533; }
+#ctl output { flex: none; min-width: 86px; text-align: right; }
+</style>
+</head>
+<body>
+<div id="bg"></div>
+<div id="wipe"></div>
+
+<div id="stage">
+  <div id="rain"></div>
+  <div id="content">
+
+    <!-- beat 1 / 2 clock and headline -->
+    <div id="clock" class="mono"><span>1</span><span>2</span><span id="colon">:</span><span id="m1">0</span><span id="m2">1</span><span> PM</span></div>
+    <div id="headline">Where to<br>eat ah?</div>
+
+    <!-- group chat (beats 2 and 7) -->
+    <div class="gb" data-side="l" data-y="440" data-rot="-2"><i class="dot" style="background:var(--yellow)"></i><div class="b">Anything lor.</div></div>
+    <div class="gb" data-side="r" data-y="580" data-rot="1.5"><div class="b">Up to you.</div><i class="dot" style="background:var(--blue)"></i></div>
+    <div class="gb" data-side="l" data-y="720" data-rot="1"><i class="dot" style="background:var(--cream)"></i><div class="b">You choose leh.</div></div>
+    <div class="gb" data-side="r" data-y="850" data-rot="-2.5"><div class="b">Dunno.</div><i class="dot" style="background:var(--red)"></i></div>
+    <div class="gb" data-side="l" data-y="940" data-rot="2"><i class="dot" style="background:var(--green)"></i><div class="b">Anything, but not that.</div></div>
+
+    <!-- bus-stop pole: sits behind the phone so the phone outline stays whole -->
+    <svg id="pole" viewBox="0 0 150 150" aria-hidden="true">
+      <rect x="118" y="0" width="14" height="150" rx="7" fill="#1F1A17"/>
+      <rect x="6" y="10" width="116" height="72" rx="14" fill="#1F1A17"/>
+      <rect x="24" y="22" width="80" height="38" rx="9" fill="#FFF6E5"/>
+      <rect x="31" y="29" width="17" height="13" rx="2.5" fill="#1F1A17"/>
+      <rect x="53" y="29" width="17" height="13" rx="2.5" fill="#1F1A17"/>
+      <rect x="75" y="29" width="22" height="13" rx="2.5" fill="#1F1A17"/>
+      <circle cx="43" cy="62" r="8" fill="#FFF6E5"/><circle cx="85" cy="62" r="8" fill="#FFF6E5"/>
+    </svg>
+
+    <!-- phone -->
+    <div id="phone">
+      <div id="phead">Lunch Uncle</div>
+      <div id="chat">
+        <div class="grp" id="gA">
+          <div class="bub uncle bal"><div class="in">Eh, what you want to eat? Don't waste my time.</div></div>
+          <div class="bub user"><div class="in">Something soupy, not too far.</div></div>
+          <div class="bub uncle swap"><div class="in think">Uncle thinking<span class="d">.</span><span class="d">.</span><span class="d">.</span></div><div class="in reply">Go [fish soup place]. <span class="hl y">4.4 stars</span>, <span class="hl y">250 m</span>, <span class="hl y">open now</span>. Hot soup, near enough. Or Berseh Food Centre, more choice.</div></div>
+        </div>
+        <div class="grp" id="gB">
+          <div class="bub user"><div class="in">Raining or not? Can walk?</div></div>
+          <div class="bub uncle swap"><div class="in think">Uncle thinking<span class="d">.</span><span class="d">.</span><span class="d">.</span></div><div class="in reply">Kallang side, next two hours: showers. Bring umbrella lah. Or just take the nearer one.</div></div>
+        </div>
+        <div class="grp" id="gC">
+          <div class="bub user"><div class="in">Stop 12345, bus coming or not?</div></div>
+          <div class="bub uncle swap"><div class="in think">Uncle thinking<span class="d">.</span><span class="d">.</span><span class="d">.</span></div><div class="in reply">Stop 12345. Next bus <span class="hl k">3 min</span>, the one after <span class="hl k">11 min</span>. Walk faster lah.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- umbrella: drawn above the phone corner -->
+    <svg id="umbrella" viewBox="0 0 150 150" aria-hidden="true">
+      <path d="M75 74 V128 a11 11 0 0 0 22 0" fill="none" stroke="#FFC533" stroke-width="8" stroke-linecap="round"/>
+      <g id="canopy">
+        <rect x="72.5" y="4" width="5" height="12" rx="2.5" fill="#FFF6E5"/>
+        <path d="M8 80 A67 67 0 0 1 142 80 Q125.25 64 108.5 80 Q91.75 64 75 80 Q58.25 64 41.5 80 Q24.75 64 8 80 Z" fill="#FFF6E5"/>
+      </g>
+    </svg>
+
+    <!-- callouts -->
+    <div class="pillrow" id="pill1"><div class="pill">
+      <span class="seg">4.4<svg class="star" viewBox="0 0 24 24" role="img" aria-label="stars"><path d="M12 1.5l3.2 6.7 7.3 1-5.3 5.1 1.3 7.2L12 18l-6.5 3.5 1.3-7.2L1.5 9.2l7.3-1z"/></svg></span>
+      <i class="sep"></i><span class="seg">250 m</span>
+      <i class="sep"></i><span class="seg"><i class="odot"></i>open now</span>
+    </div></div>
+    <div class="pillrow" id="pill2"><div class="pill">
+      <span class="seg">3 min</span><i class="sep"></i><span class="seg">11 min</span>
+    </div></div>
+
+    <!-- captions -->
+    <div class="cap" id="cap2">Every day, same question.<br>Nobody decides.</div>
+    <div class="cap" id="cap3">So ask Uncle.</div>
+    <div class="cap" id="cap4">Real places near CT Hub 2.<br>One or two picks, not ten.</div>
+    <div class="cap" id="cap5">Checks the two-hour rain<br>forecast before you walk.</div>
+    <div class="cap" id="cap6" style="color:var(--ink)">Live bus arrivals.<br>Just give the five-digit<br>stop code.</div>
+    <div id="foot">Illustrative chat. Real answers use live data.</div>
+
+    <!-- beat 7 -->
+    <div id="settled"><div>Settled.</div></div>
+    <svg id="tick" viewBox="0 0 72 72" aria-hidden="true">
+      <circle cx="36" cy="36" r="36" fill="#0F8B6C"/>
+      <path id="tickpath" d="M21 37 L32 48 L52 26" fill="none" stroke="#FFF6E5" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="46" stroke-dashoffset="46"/>
+    </svg>
+    <div class="stack" style="top:760px">Real places.</div>
+    <div class="stack" style="top:880px">Rain forecast.</div>
+    <div class="stack" style="top:1000px">Live buses.</div>
+    <div class="stack" style="top:1120px;color:var(--yellow)">One opinion.</div>
+
+    <!-- beat 8 -->
+    <div id="wordmark">Lunch Uncle</div>
+    <div id="tagline">Don't think so much.<br>Ask Uncle.</div>
+    <div id="cta"><div>Open <span class="mono">[APP_URL]</span></div></div>
+    <div id="loc">For lunch around CT Hub 2, Lavender.</div>
+  </div>
+</div>
+
+<div id="ctl">
+  <button id="bplay" title="Play / pause (space)" aria-label="Play or pause"><svg viewBox="0 0 14 14"><path id="iplay" d="M3 1.5v11l9-5.5z"/></svg></button>
+  <button id="brest" title="Restart (R)" aria-label="Restart"><svg viewBox="0 0 14 14"><path d="M7 2.2V0L3.4 3.1 7 6.2V4a3.6 3.6 0 1 1-3.6 3.6H1.6A5.4 5.4 0 1 0 7 2.2z"/></svg></button>
+  <input id="scrub" type="range" min="0" max="45" step="0.0333333" value="0" aria-label="Scrub">
+  <output id="tout">0.0 / 45.0</output>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var DUR = 45;
+  var C = { ink: '#1F1A17', cream: '#FFF6E5', red: '#E03A1E', yellow: '#FFC533', green: '#0F8B6C', blue: '#2F6FDE', grey: '#8A7F76' };
+
+  /* ---------- easing ---------- */
+  function bez(x1, y1, x2, y2) {
+    function f(a, b, u) { var v = 1 - u; return 3 * v * v * u * a + 3 * v * u * u * b + u * u * u; }
+    return function (x) {
+      if (x <= 0) return 0;
+      if (x >= 1) return 1;
+      var lo = 0, hi = 1, u = x, i;
+      for (i = 0; i < 40; i++) {
+        var cx = f(x1, x2, u);
+        if (Math.abs(cx - x) < 1e-6) break;
+        if (cx < x) lo = u; else hi = u;
+        u = (lo + hi) / 2;
+      }
+      return f(y1, y2, u);
+    };
+  }
+  var E = {
+    snap: bez(0.2, 0.9, 0.2, 1),
+    drift: bez(0.4, 0, 0.6, 1),
+    wipe: bez(0.7, 0, 0.2, 1),
+    slam: bez(0.1, 0.9, 0.2, 1)
+  };
+  function P(t, start, dur, ease) {
+    var x = (t - start) / dur;
+    x = x < 0 ? 0 : x > 1 ? 1 : x;
+    return ease ? ease(x) : x;
+  }
+  function pulse(t, start, dur, amt) { return 1 + amt * Math.sin(Math.PI * P(t, start, dur)); }
+  function mix(a, b, p) {
+    var o = '#', i, x, y;
+    for (i = 1; i < 7; i += 2) {
+      x = parseInt(a.substr(i, 2), 16); y = parseInt(b.substr(i, 2), 16);
+      o += ('0' + Math.round(x + (y - x) * p).toString(16)).slice(-2);
+    }
+    return o;
+  }
+
+  /* ---------- dom helpers ---------- */
+  function $(id) { return document.getElementById(id); }
+  function all(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  // Set opacity plus a transform; anything fully transparent is hidden outright.
+  function put(el, o, x, y, s, r) {
+    if (o <= 0.001) { el.style.visibility = 'hidden'; return; }
+    el.style.visibility = 'visible';
+    el.style.opacity = o;
+    var tr = 'translate(' + (x || 0).toFixed(2) + 'px,' + (y || 0).toFixed(2) + 'px)';
+    if (r) tr += ' rotate(' + r + 'deg)';
+    if (s != null && s !== 1) tr += ' scale(' + s.toFixed(4) + ')';
+    el.style.transform = tr;
+  }
+  function hide(el) { el.style.visibility = 'hidden'; }
+  // "Caption-in": rise `travel` px and fade in with snap; optional linear fade-out.
+  function capIn(el, t, tin, tout, travel, outDur) {
+    if (t < tin || t >= tout) { hide(el); return; }
+    var p = P(t, tin, 0.18, E.snap);
+    var o = p * (outDur ? 1 - P(t, tout - outDur, outDur) : 1);
+    put(el, o, 0, (1 - p) * (travel || 30));
+  }
+
+  var el = {
+    bg: $('bg'), wipe: $('wipe'), stage: $('stage'), rain: $('rain'),
+    clock: $('clock'), colon: $('colon'), m1: $('m1'), m2: $('m2'), headline: $('headline'),
+    phone: $('phone'), umbrella: $('umbrella'), canopy: $('canopy'), pole: $('pole'),
+    pill1: $('pill1'), pill2: $('pill2'), foot: $('foot'),
+    cap2: $('cap2'), cap3: $('cap3'), cap4: $('cap4'), cap5: $('cap5'), cap6: $('cap6'),
+    settled: $('settled'), tick: $('tick'), tickpath: $('tickpath'),
+    wordmark: $('wordmark'), tagline: $('tagline'), cta: $('cta'), loc: $('loc')
+  };
+  var stack = all('.stack');
+  var seg1 = all('.seg', el.pill1), seg2 = all('.seg', el.pill2);
+
+  /* ---------- one-time layout (measured at scale 1, before the stage is fitted) ---------- */
+  var CHAT_W = 736, CHAT_H = 820, GAP = 20, FIRST = 20;
+
+  function textWidth(node) {
+    var r = document.createRange();
+    r.selectNodeContents(node);
+    return r.getBoundingClientRect().width;
+  }
+  function sizeInner(inner) {
+    // Shrink-wrap a wrapped bubble to its longest line.
+    inner.style.width = '';
+    var w = Math.ceil(textWidth(inner)) + 64 + 2;
+    inner.style.width = w + 'px';
+    return { w: w, h: inner.offsetHeight };
+  }
+
+  var groups = [
+    { id: 'gA', scroll: 20, times: [{ tin: 8.4 }, { tin: 11.3 }, { tin: 12.3, swap: 13.1 }], hl: [14.9, 15.15, 15.4] },
+    { id: 'gB', scroll: 28, times: [{ tin: 20.8 }, { tin: 21.8, swap: 22.5 }], hl: [] },
+    { id: 'gC', scroll: null, times: [{ tin: 28.8 }, { tin: 29.8, swap: 30.5 }], hl: [32.0, 32.25] }
+  ];
+  groups.forEach(function (g) {
+    g.el = $(g.id);
+    g.hlEls = all('.hl', g.el);
+    var y = FIRST;
+    g.items = all('.bub', g.el).map(function (b, i) {
+      var it = { el: b, tin: g.times[i].tin, swap: g.times[i].swap, user: b.classList.contains('user'), y: y };
+      if (b.classList.contains('swap')) {
+        it.think = b.querySelector('.think'); it.reply = b.querySelector('.reply');
+        it.dots = all('.d', it.think);
+        it.reply.style.display = 'none';
+        it.a = sizeInner(it.think);
+        it.think.style.display = 'none'; it.reply.style.display = '';
+        it.b = sizeInner(it.reply);
+      } else {
+        it.a = it.b = sizeInner(b.querySelector('.in'));
+      }
+      it.x = it.user ? CHAT_W - it.b.w : 0;
+      b.style.left = it.x + 'px';
+      b.style.top = it.y + 'px';
+      y += it.b.h + GAP;
+      return it;
+    });
+    // If the full exchange is taller than the chat area, scroll just enough at the swap.
+    g.over = Math.max(0, y - GAP + FIRST - CHAT_H);
+    g.swapAt = g.items[g.items.length - 1].swap;
+  });
+
+  // Group-chat bubbles (beats 2 and 7).
+  var GB_IN = [3.3, 3.8, 4.3, 4.8, 5.2];
+  var gbs = all('.gb').map(function (g, i) {
+    var left = g.dataset.side === 'l';
+    g.style.top = g.dataset.y + 'px';
+    if (left) g.style.left = '90px'; else g.style.right = '90px';
+    return { el: g, dir: left ? -1 : 1, rot: parseFloat(g.dataset.rot), tin: GB_IN[i],
+      cx: g.offsetLeft + g.offsetWidth / 2, cy: g.offsetTop + g.offsetHeight / 2 };
+  });
+
+  // "Settled." bubble and its tick.
+  var sb = el.settled.firstElementChild;
+  var SET = { cx: 540, cy: 460 + sb.offsetHeight / 2, w: sb.offsetWidth };
+  el.tick.style.left = (540 + SET.w / 2 - 14) + 'px';
+  el.tick.style.top = (SET.cy - 36) + 'px';
+
+  // Raindrops: deterministic pseudo-random layout. 14 in the column, more in the side bands
+  // (only visible on wide viewports). None over the phone or the caption.
+  var drops = [];
+  (function () {
+    var s = 7;
+    function rnd() { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }
+    function add(x, top) {
+      var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 10 34');
+      svg.innerHTML = '<path d="M5 0 C6.5 9 10 22 10 28.5 a5 5 0 0 1 -10 0 C0 22 3.5 9 5 0 Z"/>';
+      el.rain.appendChild(svg);
+      drops.push({ el: svg, x: x, top: top, dur: 0.9 + rnd() * 0.4, ph: rnd() });
+    }
+    var i;
+    for (i = 0; i < 5; i++) add(10 + i * 11 + rnd() * 6, false);
+    for (i = 0; i < 5; i++) add(1012 + i * 11 + rnd() * 6, false);
+    for (i = 0; i < 4; i++) add(190 + i * 165 + rnd() * 60, true);
+    for (i = 0; i < 16; i++) add(-1190 + i * 72 + rnd() * 40, false);
+    for (i = 0; i < 16; i++) add(1110 + i * 72 + rnd() * 40, false);
+  })();
+
+  /* ---------- the frame function: everything derives from t ---------- */
+  function render(t) {
+    var i, p, o;
+
+    /* background and colour wipes */
+    var bg = t < 3 ? C.red : t < 8 ? C.ink : t < 20.5 ? C.red : t < 28.5 ? C.blue : t < 36.4 ? C.yellow : C.ink;
+    el.bg.style.background = bg;
+    document.body.style.background = bg;
+    var w = t >= 20 && t < 20.5 ? [20, 0.5, C.blue] : t >= 28 && t < 28.5 ? [28, 0.5, C.yellow] : t >= 36 && t < 36.4 ? [36, 0.4, C.ink] : null;
+    if (w) {
+      el.wipe.style.visibility = 'visible';
+      el.wipe.style.background = w[2];
+      el.wipe.style.transform = 'translateY(' + ((1 - P(t, w[0], w[1], E.wipe)) * 100).toFixed(3) + '%)';
+    } else hide(el.wipe);
+
+    /* clock (beats 1 and 2) */
+    if (t >= 0.2 && t < 8) {
+      var min = 1, tc = -1;
+      if (t >= 3.4) {
+        min = Math.max(1, Math.min(24, 24 - Math.ceil((5.8 - t) / 0.1 - 1e-9)));
+        if (min > 1) tc = 5.8 - 0.1 * (24 - min);
+      }
+      var d1 = Math.floor(min / 10), d2 = min % 10;
+      el.m1.textContent = d1; el.m2.textContent = d2;
+      var fp = tc < 0 ? 1 : P(t, tc, 0.06);
+      var flip = 'scaleY(' + (0.35 + 0.65 * fp).toFixed(3) + ')';
+      el.m2.style.transform = flip;
+      el.m1.style.transform = d2 === 0 ? flip : 'none';
+      el.colon.style.opacity = 1 - 0.75 * Math.sin(Math.PI * P(t, 0.9, 0.3));
+      var sl = P(t, 0.2, 0.22, E.slam), mv = P(t, 3, 0.3, E.snap);
+      var sc = (1.6 - 0.6 * sl) * (1 - 0.36 * mv) * pulse(t, 5.8, 0.3, 0.12);
+      el.clock.style.color = mix(C.cream, C.yellow, mv);
+      put(el.clock, sl, 0, -441 * mv, sc);
+    } else hide(el.clock);
+
+    capIn(el.headline, t, 1.2, 3, 60);
+
+    /* group chat: drifts in (beat 2), returns and collapses (beat 7) */
+    for (i = 0; i < gbs.length; i++) {
+      var g = gbs[i], bob = 6 * Math.sin(2 * Math.PI * (t - i * 0.4) / 2.4);
+      if (t >= 3 && t < 8) {
+        p = P(t, g.tin, 0.7, E.drift);
+        put(g.el, p, g.dir * 40 * (1 - p), bob * P(t, g.tin + 0.6, 0.5), 1, g.rot);
+      } else if (t >= 36.2 && t < 37.2) {
+        var c = P(t, 36.7 + 0.04 * i, 0.45, E.snap);
+        put(g.el, P(t, 36.2, 0.2) * (1 - c), (SET.cx - g.cx) * c, bob * (1 - c) + (SET.cy - g.cy) * c, 1 - c, g.rot);
+      } else hide(g.el);
+    }
+    capIn(el.cap2, t, 5.8, 8);
+
+    /* phone (beats 3 to 6) */
+    var gone = P(t, 36, 0.15);            // phone, icon, callout, footnote fade under the ink wipe
+    if (t >= 8 && t < 36.15) {
+      put(el.phone, 1 - gone, 0, 0, 1.04 - 0.04 * P(t, 8, 0.18, E.snap));
+      for (i = 0; i < groups.length; i++) renderGroup(groups[i], t);
+    } else hide(el.phone);
+
+    capIn(el.cap3, t, 8.8, 11, 30, 0.15);
+
+    /* beat 4 callout and caption */
+    if (t >= 14.6 && t < 20) {
+      p = P(t, 14.6, 0.18, E.snap);
+      put(el.pill1, p * (1 - P(t, 19.85, 0.15)), 0, (1 - p) * 30);
+      for (i = 0; i < 3; i++) seg1[i].style.transform = 'scale(' + pulse(t, 14.9 + 0.25 * i, 0.25, 0.1).toFixed(4) + ')';
+    } else hide(el.pill1);
+    capIn(el.cap4, t, 15.6, 20, 30, 0.15);
+
+    /* footnote (beats 4 to 6) */
+    if (t >= 11 && t < 36.15) {
+      el.foot.style.color = mix(C.cream, C.ink, P(t, 28.02, 0.1));
+      put(el.foot, 0.85 * P(t, 11, 0.2) * (1 - gone), 0, 0);
+    } else hide(el.foot);
+
+    /* beat 5: rain, umbrella, caption */
+    var rainO = P(t, 20.4, 0.3) * (1 - P(t, 28, 0.2));
+    for (i = 0; i < drops.length; i++) {
+      var d = drops[i];
+      if (rainO <= 0) { hide(d.el); continue; }
+      var f = ((t - 20.4) / d.dur + d.ph) % 1, y = -320 + 2560 * f, a = 0.35 * rainO;
+      if (d.top) a *= 1 - P(y, 150, 60);   // drops above the phone die out before reaching it
+      put(d.el, a, d.x, y, 1, 12);
+    }
+    if (t >= 23.5 && t < 28.2) {
+      put(el.umbrella, P(t, 23.5, 0.1) * (1 - P(t, 28, 0.2)), 0, 0);
+      var sx = 0.15 + 0.85 * P(t, 23.5, 0.26, E.snap);
+      el.canopy.setAttribute('transform', 'translate(75 0) scale(' + sx.toFixed(4) + ' 1) translate(-75 0)');
+    } else hide(el.umbrella);
+    capIn(el.cap5, t, 24, 28, 30, 0.15);
+
+    /* beat 6: pole, callout, caption */
+    if (t >= 28.5 && t < 36.15) {
+      p = P(t, 28.5, 0.18, E.snap);
+      put(el.pole, p * (1 - gone), 0, 60 * (1 - p));
+    } else hide(el.pole);
+    if (t >= 31.8 && t < 36.15) {
+      p = P(t, 31.8, 0.18, E.snap);
+      put(el.pill2, p * (1 - gone), 0, (1 - p) * 30);
+      for (i = 0; i < 2; i++) seg2[i].style.transform = 'scale(' + pulse(t, 32 + 0.25 * i, 0.25, 0.1).toFixed(4) + ')';
+    } else hide(el.pill2);
+    capIn(el.cap6, t, 32.5, 36, 30, 0.15);
+
+    /* beat 7: "Settled.", tick, stacked lines; all leave together at 41.0 */
+    var out7 = P(t, 41, 0.25), up7 = -40 * out7;
+    if (t >= 36.5 && t < 41.25) {
+      p = P(t, 36.5, 0.18, E.snap);
+      put(el.settled, p * (1 - out7), 0, 24 * (1 - p) + up7);
+    } else hide(el.settled);
+    if (t >= 36.7 && t < 41.25) {
+      put(el.tick, 1 - out7, 0, up7, Math.max(0.001, P(t, 36.7, 0.18, E.snap)));
+      el.tickpath.setAttribute('stroke-dashoffset', (46 * (1 - P(t, 36.76, 0.2))).toFixed(2));
+    } else hide(el.tick);
+    for (i = 0; i < stack.length; i++) {
+      var ts = 37.2 + 0.5 * i;
+      if (t >= ts && t < 41.25) {
+        p = P(t, ts, 0.18, E.snap);
+        put(stack[i], p * (1 - out7), 0, 30 * (1 - p) + up7);
+      } else hide(stack[i]);
+    }
+
+    /* beat 8: end card. All motion is finished by 43.1 s. */
+    capIn(el.wordmark, t, 41.3, 99);
+    capIn(el.tagline, t, 41.9, 99);
+    capIn(el.cta, t, 42.5, 99);
+    if (t >= 42.9) put(el.loc, P(t, 42.9, 0.2), 0, 0); else hide(el.loc);
+  }
+
+  function renderGroup(g, t) {
+    var first = g.items[0].tin;
+    var sp = g.scroll == null ? 0 : P(t, g.scroll, 0.5, E.wipe);
+    if (t < first || sp >= 1) { g.el.style.visibility = 'hidden'; g.items.forEach(function (it) { hide(it.el); }); return; }
+    g.el.style.visibility = 'visible';
+    // Auto-scroll: a small one if the reply overflows, then the whole exchange out during the wipe.
+    g.el.style.transform = 'translateY(' + (-g.over * P(t, g.swapAt, 0.18, E.snap) - CHAT_H * sp).toFixed(2) + 'px)';
+    var i, k;
+    for (i = 0; i < g.items.length; i++) {
+      var it = g.items[i];
+      if (t < it.tin) { hide(it.el); continue; }
+      var p = P(t, it.tin, 0.18, E.snap);
+      put(it.el, p, 0, 24 * (1 - p));
+      if (it.swap != null) {
+        // Thinking swap: same bubble, text replaced in one frame, size eased with snap.
+        var done = t >= it.swap, q = P(t, it.swap, 0.18, E.snap);
+        it.think.style.display = done ? 'none' : '';
+        it.reply.style.display = done ? '' : 'none';
+        it.el.style.width = (it.a.w + (it.b.w - it.a.w) * q).toFixed(2) + 'px';
+        it.el.style.height = (it.a.h + (it.b.h - it.a.h) * q).toFixed(2) + 'px';
+        if (!done) for (k = 0; k < 3; k++) {
+          var ph = (((t - it.tin) / 0.6 - k / 3) % 1 + 1) % 1;
+          it.dots[k].style.opacity = (0.25 + 0.75 * Math.max(0, Math.sin(Math.PI * ph * 1.5))).toFixed(3);
+        }
+      } else {
+        it.el.style.width = it.b.w + 'px';
+        it.el.style.height = it.b.h + 'px';
+      }
+    }
+    for (i = 0; i < g.hlEls.length; i++) {
+      var h = g.hlEls[i];
+      h.style.backgroundSize = (P(t, g.hl[i], 0.25, E.snap) * 100).toFixed(1) + '% ' + (h.classList.contains('k') ? '6px' : '10px');
+    }
+  }
+
+  /* ---------- fit the stage to the viewport ---------- */
+  function fit() {
+    var s = Math.min(window.innerWidth / 1080, window.innerHeight / 1920);
+    el.stage.style.transform = 'scale(' + s + ')';
+  }
+  fit();
+  window.addEventListener('resize', fit);
+
+  /* ---------- master clock and controls ---------- */
+  var q = new URLSearchParams(location.search);
+  var loop = q.get('loop') === '1';
+  var cur = 0, playing = q.get('autoplay') !== '0', t0 = 0, base = null;
+  if (q.has('t')) { cur = Math.max(0, Math.min(DUR, parseFloat(q.get('t')) || 0)); playing = false; }
+
+  var ctl = $('ctl'), scrub = $('scrub'), tout = $('tout'), iplay = $('iplay');
+  if (q.get('controls') === '0') ctl.style.display = 'none';
+
+  function draw() {
+    render(cur);
+    scrub.value = cur;
+    tout.textContent = cur.toFixed(1) + ' / ' + DUR.toFixed(1);
+    iplay.setAttribute('d', playing ? 'M3 1.5h3v11H3zM8 1.5h3v11H8z' : 'M3 1.5v11l9-5.5z');
+  }
+  function seek(t) { cur = Math.max(0, Math.min(DUR, t)); t0 = cur; base = null; draw(); }
+  function toggle() {
+    if (!playing && cur >= DUR) cur = 0;
+    playing = !playing; t0 = cur; base = null; draw();
+  }
+  function frame(now) {
+    if (playing) {
+      if (base === null) { base = now; t0 = cur; }
+      cur = t0 + (now - base) / 1000;
+      if (cur >= DUR) {
+        if (loop) { cur = 0; t0 = 0; base = now; } else { cur = DUR; playing = false; }
+      }
+      draw();
+    }
+    requestAnimationFrame(frame);
+  }
+
+  var lastMove = -1e9;
+  function wake() { lastMove = performance.now(); ctl.classList.add('show'); }
+  window.addEventListener('pointermove', wake);
+  window.addEventListener('pointerdown', wake);
+  // Hiding is checked on the same rAF clock; no timers anywhere.
+  (function idle(now) {
+    if (now - lastMove > 2200 && !ctl.matches(':hover') && document.activeElement !== scrub) ctl.classList.remove('show');
+    requestAnimationFrame(idle);
+  })(performance.now());
+
+  $('bplay').addEventListener('click', toggle);
+  $('brest').addEventListener('click', function () { seek(0); });
+  scrub.addEventListener('input', function () { seek(parseFloat(scrub.value)); });
+  window.addEventListener('keydown', function (e) {
+    if (e.key === ' ') { e.preventDefault(); toggle(); }
+    else if (e.key === 'r' || e.key === 'R') seek(0);
+    else if (e.key === 'ArrowRight') seek(cur + 1 / 30);
+    else if (e.key === 'ArrowLeft') seek(cur - 1 / 30);
+    else return;
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  });
+
+  window.lunchUnclePromo = { render: render, seek: seek, duration: DUR };
+  draw();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
